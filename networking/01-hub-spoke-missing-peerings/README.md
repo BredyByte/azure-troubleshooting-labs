@@ -19,7 +19,18 @@ The peerings between the hub and the three local spokes are intentionally missin
 ![Azure architecture](../../docs/01-hub-spoke-missing-peerings.png)
 
 ## Troubleshooting scenarios
+- VM1 cannot communicate with VM2 using their private IP addresses.
+- The local spoke VNets cannot communicate with the hub VNet.
+- Restoring the hub-to-spoke peerings does not automatically provide spoke-to-spoke connectivity.
+- Check the global connection between Italy and Spain Hub vNets 
 
 ## Troubleshooting notes
 
+### Scenario 1: VM1 cannot communicate with VM2
+- Symptoms:
+- Troubleshooting tools used:
+- Checks performed:
+- Root cause:
+- Changes applied:
+- Validation:
 
