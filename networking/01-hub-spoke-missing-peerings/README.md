@@ -56,4 +56,8 @@ The peerings between: the hub and the two local spokes, and between the spokes a
 - Tools used: Connection Troubleshoot, Next Hop, Effective Routes and Network Topology.
 - Root cause: VNet peering is not transitive. Direct peering or a routing appliance with UDRs is required.
 
+## Solution
 
+The recommended solution for scalable spoke-to-spoke connectivity is to route traffic through an Azure Firewall or a Network Virtual Appliance deployed in the hub, using user-defined routes for centralized routing and traffic inspection.
+
+However, the objective of this lab is to practise Azure troubleshooting tools rather than implement a production-ready architecture. Therefore, direct VNet peering is configured only between the Spoke C and Spoke A. After creating the following bidirectional perring the connectivity is tested again to configrm that communictation using their IP addresses works correctly

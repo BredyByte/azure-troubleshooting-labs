@@ -280,6 +280,29 @@ resource "azurerm_virtual_network_peering" "spoke_c_to_hub" {
   use_remote_gateways          = false
 }
 
+# VNet peering: spoke a <-> spoke C
+resource "azurerm_virtual_network_peering" "spoke_a_to_spoke_c" {
+  name                         = "SpokeA-to-SpokeC"
+  resource_group_name          = azurerm_resource_group.this.name
+  virtual_network_name         = azurerm_virtual_network.spoke_a.name
+  remote_virtual_network_id    = azurerm_virtual_network.spoke_c.id
+  allow_virtual_network_access = true
+  allow_forwarded_traffic      = true
+  allow_gateway_transit        = false
+  use_remote_gateways          = false
+}
+
+resource "azurerm_virtual_network_peering" "spoke_c_to_spoke_a" {
+  name                         = "SpokeC-to-SpokeA"
+  resource_group_name          = azurerm_resource_group.this.name
+  virtual_network_name         = azurerm_virtual_network.spoke_c.name
+  remote_virtual_network_id    = azurerm_virtual_network.spoke_a.id
+  allow_virtual_network_access = true
+  allow_forwarded_traffic      = true
+  allow_gateway_transit        = false
+  use_remote_gateways          = false
+}
+
 # The hub-to-spoke peerings are intentionally missing.
 # This is the failure that must be investigated in this troubleshooting case.
 
