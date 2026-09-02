@@ -46,6 +46,12 @@ resource "azurerm_network_security_group" "vm2" {
   resource_group_name = azurerm_resource_group.this.name
 }
 
+resource "azurerm_network_security_group" "vm3" {
+  name                = "vm-VM3-dev-troubleshooting-nsg"
+  location            = var.secondary_location
+  resource_group_name = azurerm_resource_group.this.name
+}
+
 resource "azurerm_network_security_rule" "vm1_rdp" {
   name                        = "RDP"
   priority                    = 300
@@ -74,6 +80,20 @@ resource "azurerm_network_security_rule" "vm2_rdp" {
   network_security_group_name = azurerm_network_security_group.vm2.name
 }
 
+resource "azurerm_network_security_rule" "vm3_rdp" {
+  name                        = "RDP"
+  priority                    = 300
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "Tcp"
+  source_port_range           = "*"
+  destination_port_range      = "3389"
+  source_address_prefix       = "*"
+  destination_address_prefix  = "*"
+  resource_group_name         = azurerm_resource_group.this.name
+  network_security_group_name = azurerm_network_security_group.vm3.name
+}
+
 ############################################################
 # Public IP addresses
 ############################################################
@@ -98,6 +118,14 @@ resource "azurerm_public_ip" "vm1" {
 resource "azurerm_public_ip" "vm2" {
   name                = "vm-VM2-dev-troubleshooting-ip"
   location            = var.location
+  resource_group_name = azurerm_resource_group.this.name
+  allocation_method   = "Static"
+  sku                 = "Standard"
+}
+
+resource "azurerm_public_ip" "vm3" {
+  name                = "vm-VM3-dev-troubleshooting-ip"
+  location            = var.secondary_location
   resource_group_name = azurerm_resource_group.this.name
   allocation_method   = "Static"
   sku                 = "Standard"
@@ -286,6 +314,20 @@ resource "azurerm_network_interface" "vm2" {
   }
 }
 
+resource "azurerm_network_interface" "vm3" {
+  name                = "nic-vm3-dev-troubleshooting"
+  location            = var.secondary_location
+  resource_group_name = azurerm_resource_group.this.name
+
+  ip_configuration {
+    name                          = "ipconfig1"
+    subnet_id                     = azurerm_subnet.italy_1.id
+    private_ip_address_allocation = "Dynamic"
+    public_ip_address_id          = azurerm_public_ip.vm3.id
+  }
+}
+
+
 resource "azurerm_network_interface_security_group_association" "vm1" {
   network_interface_id      = azurerm_network_interface.vm1.id
   network_security_group_id = azurerm_network_security_group.vm1.id
@@ -294,6 +336,11 @@ resource "azurerm_network_interface_security_group_association" "vm1" {
 resource "azurerm_network_interface_security_group_association" "vm2" {
   network_interface_id      = azurerm_network_interface.vm2.id
   network_security_group_id = azurerm_network_security_group.vm2.id
+}
+
+resource "azurerm_network_interface_security_group_association" "vm3" {
+  network_interface_id      = azurerm_network_interface.vm3.id
+  network_security_group_id = azurerm_network_security_group.vm3.id
 }
 
 ############################################################
@@ -351,6 +398,35 @@ resource "azurerm_windows_virtual_machine" "vm2" {
 
   os_disk {
     name                 = "osdisk-vm2-dev-troubleshooting"
+    caching              = "ReadWrite"
+    storage_account_type = "StandardSSD_LRS"
+    disk_size_gb         = 127
+  }
+
+  source_image_reference {
+    publisher = "MicrosoftWindowsServer"
+    offer     = "WindowsServer"
+    sku       = "2025-datacenter-g2"
+    version   = "latest"
+  }
+}
+
+resource "azurerm_windows_virtual_machine" "vm3" {
+  name                = "vm-VM3-dev-troubleshooting"
+  computer_name       = "vm-VM3-dev-trou"
+  location            = var.secondary_location
+  resource_group_name = azurerm_resource_group.this.name
+  size                = "Standard_D2als_v7"
+
+  admin_username = var.vm_admin_username
+  admin_password = var.vm_admin_password
+
+  network_interface_ids = [
+    azurerm_network_interface.vm3.id
+  ]
+
+  os_disk {
+    name                 = "osdisk-vm3-dev-troubleshooting"
     caching              = "ReadWrite"
     storage_account_type = "StandardSSD_LRS"
     disk_size_gb         = 127
