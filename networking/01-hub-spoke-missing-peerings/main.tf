@@ -231,9 +231,10 @@ resource "azurerm_subnet" "italy_1" {
 }
 
 ############################################################
-# Global VNet peering: Spain hub <-> Italy North
+# Vnet Peering
 ############################################################
 
+# Global VNet peering: Spain hub <-> Italy North
 resource "azurerm_virtual_network_peering" "hub_to_italy" {
   name                         = "SpainHub-to-Italy"
   resource_group_name          = azurerm_resource_group.this.name
@@ -249,6 +250,29 @@ resource "azurerm_virtual_network_peering" "italy_to_hub" {
   name                         = "Italy-to-SpainHub"
   resource_group_name          = azurerm_resource_group.this.name
   virtual_network_name         = azurerm_virtual_network.italy.name
+  remote_virtual_network_id    = azurerm_virtual_network.hub.id
+  allow_virtual_network_access = true
+  allow_forwarded_traffic      = true
+  allow_gateway_transit        = false
+  use_remote_gateways          = false
+}
+
+# VNet peering: hub <-> spoke C
+resource "azurerm_virtual_network_peering" "hub_to_spoke_c" {
+  name                         = "Hub-to-SpokeC"
+  resource_group_name          = azurerm_resource_group.this.name
+  virtual_network_name         = azurerm_virtual_network.hub.name
+  remote_virtual_network_id    = azurerm_virtual_network.spoke_c.id
+  allow_virtual_network_access = true
+  allow_forwarded_traffic      = true
+  allow_gateway_transit        = false
+  use_remote_gateways          = false
+}
+
+resource "azurerm_virtual_network_peering" "spoke_c_to_hub" {
+  name                         = "SpokeC-to-Hub"
+  resource_group_name          = azurerm_resource_group.this.name
+  virtual_network_name         = azurerm_virtual_network.spoke_c.name
   remote_virtual_network_id    = azurerm_virtual_network.hub.id
   allow_virtual_network_access = true
   allow_forwarded_traffic      = true
