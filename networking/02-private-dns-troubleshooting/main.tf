@@ -677,3 +677,65 @@ resource "azurerm_linux_virtual_machine" "vm3" {
     azurerm_network_interface_security_group_association.vm3
   ]
 }
+
+############################################################
+# Private DNS Zone
+############################################################
+
+resource "azurerm_private_dns_zone" "lab" {
+  name                = "lab.internal"
+  resource_group_name = azurerm_resource_group.this.name
+
+  tags = {
+    environment = var.environment
+    purpose     = "dns-troubleshooting"
+  }
+}
+
+############################################################
+# Private DNS Zone links
+############################################################
+
+resource "azurerm_private_dns_zone_virtual_network_link" "spoke_a" {
+  name                  = "link-spokeA"
+  resource_group_name   = azurerm_resource_group.this.name
+  private_dns_zone_name = azurerm_private_dns_zone.lab.name
+  virtual_network_id    = azurerm_virtual_network.spoke_a.id
+
+  registration_enabled = true
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "spoke_c" {
+  name                  = "link-spokeC"
+  resource_group_name   = azurerm_resource_group.this.name
+  private_dns_zone_name = azurerm_private_dns_zone.lab.name
+  virtual_network_id    = azurerm_virtual_network.spoke_c.id
+
+  registration_enabled = false
+}
+
+# Italy North is intentionally not linked to the Private DNS Zone.
+# VM3 will have IP connectivity but will not be able to resolve lab.internal.
+
+############################################################
+# Private DNS records
+############################################################
+
+resource "azurerm_private_dns_a_record" "vm2" {
+  name                = "vm2"
+  zone_name           = azurerm_private_dns_zone.lab.name
+  resource_group_name = azurerm_resource_group.this.name
+
+  ttl     = 300
+  records = ["10.4.0.5"]
+  # Deliberately incorrect manually entered record
+}
+
+resource "azurerm_private_dns_a_record" "vm3" {
+  name                = "vm3"
+  zone_name           = azurerm_private_dns_zone.lab.name
+  resource_group_name = azurerm_resource_group.this.name
+
+  ttl     = 300
+  records = ["10.10.0.4"]
+}

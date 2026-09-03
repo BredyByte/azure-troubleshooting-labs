@@ -8,6 +8,6 @@ location           = "spaincentral"
 secondary_location = "italynorth"
 
 vm_admin_username = "azureadmin"
-vm_admin_password = "CHANGE-ME-123!"
+vm_admin_password = "AzureTroubleshooting123!"
 
 allowed_ssh_source = "*"
