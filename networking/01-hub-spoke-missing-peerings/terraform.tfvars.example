@@ -10,3 +10,5 @@ vm_admin_password = "AzureTroubleshooting123!"
 # resource_group_name = "rg-dev-troubleshooting-hub-spoke"
 # location            = "Spain Central"
 # secondary_location  = "Italy North"
+
+create_vpn_gateway = false

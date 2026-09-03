@@ -37,3 +37,9 @@ variable "vm_admin_password" {
     error_message = "The VM administrator password must contain at least 12 characters."
   }
 }
+
+variable "create_vpn_gateway" {
+  description = "Controls whether the VPN Gateway and its public IP are created."
+  type        = bool
+  default     = false
+}

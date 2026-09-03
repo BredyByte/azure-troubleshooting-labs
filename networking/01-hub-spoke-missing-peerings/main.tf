@@ -99,6 +99,8 @@ resource "azurerm_network_security_rule" "vm3_rdp" {
 ############################################################
 
 resource "azurerm_public_ip" "vpn_gateway" {
+  count = var.create_vpn_gateway ? 1 : 0
+
   name                = "pip-vpngw-dev-troubleshooting"
   location            = var.location
   resource_group_name = azurerm_resource_group.this.name
@@ -311,6 +313,8 @@ resource "azurerm_virtual_network_peering" "spoke_c_to_spoke_a" {
 ############################################################
 
 resource "azurerm_virtual_network_gateway" "this" {
+  count = var.create_vpn_gateway ? 1 : 0
+
   name                = "vntgw-dev-troubleshooting"
   location            = var.location
   resource_group_name = azurerm_resource_group.this.name
@@ -323,8 +327,10 @@ resource "azurerm_virtual_network_gateway" "this" {
   sku           = "VpnGw2AZ"
 
   ip_configuration {
-    name                          = "default"
-    public_ip_address_id          = azurerm_public_ip.vpn_gateway.id
+    name = "default"
+
+    public_ip_address_id = azurerm_public_ip.vpn_gateway[0].id
+
     private_ip_address_allocation = "Dynamic"
     subnet_id                     = azurerm_subnet.gateway.id
   }
