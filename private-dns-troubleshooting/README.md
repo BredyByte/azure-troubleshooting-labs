@@ -2,7 +2,7 @@
 
 ## Scenario
 
-![Azure architecture](../../docs/02-private-dns-troubleshoot.png)
+![Azure architecture](../docs/private-dns-troubleshoot.png)
 
 ## Troubleshooting scenarios
 
